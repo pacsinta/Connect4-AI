@@ -5,6 +5,21 @@ public class StudentPlayer extends Player{
 
     @Override
     public int step(Board board) {
+
         return 0;
+    }
+
+    private int getValue(Board board){
+
+        //TODO
+    }
+
+    private int minValue(){
+        //TODO
+    }
+
+    private int maxValue(Board board){
+        if(board.gameEnded()) return getValue();
+
     }
 }
