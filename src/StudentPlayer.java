@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class StudentPlayer extends Player {
     class Points {
         public static final int inf = Integer.MAX_VALUE;
@@ -100,25 +98,61 @@ public class StudentPlayer extends Player {
         int step;
         Board board;
 
-        Node(int value, Board board) {
+        Node(int value, Board board, int node_depth) {
             this.value = value;
             this.board = new Board(board);
+            this.node_depth = node_depth;
             board.getLastPlayerColumn();
         }
 
-        Node(Board board) {
+        Node(Board board, int node_depth) {
             this.value = -1;
             this.board = new Board(board);
+            this.node_depth = node_depth;
         }
 
-        void calc(boolean max) {
-            if(max){
+        int node_depth;
+        int calcValue(boolean maxValue) {
+            if(node_depth != 0){
+                createChildren();
+            }
+
+            if(maxValue){
+                int max = -Points.inf;
                 for (int i = 0; i < boardSize[1]; i++) {
                     if(nodes[i] != null){
-                        nodes[i].calc(false);
+                        if(node_depth == 0){
+                            value = getValue(nodes[i].board, i, playerIndex);
+                        }else{
+                            value = nodes[i].calcValue(false);
+                        }
 
+                        if(value > max){
+                            max = value;
+                            step = i;
+                        }
                     }
                 }
+
+                return max;
+            }else{
+                int min = Points.inf;
+                for (int i = 0; i < boardSize[1]; i++) {
+                    if(nodes[i] != null){
+                        if(node_depth == 0){
+                            value = getValue(nodes[i].board, i, playerIndex);
+                        }else{
+                            value = nodes[i].calcValue(true);
+                        }
+
+                        if(value < min){
+                            min = value;
+                            step = i;
+                        }
+                    }
+                }
+
+                return min;
             }
         }
 
@@ -134,7 +168,7 @@ public class StudentPlayer extends Player {
                         int moveValue = getValue(copyBoard, i, nextPlayer);
 
                         copyBoard.step(nextPlayer, i);
-                        nodes[i] = new Node(moveValue, copyBoard);
+                        nodes[i] = new Node(moveValue, copyBoard, node_depth - 1);
                     }else{
                         nodes[i] = null;
                     }
@@ -147,14 +181,8 @@ public class StudentPlayer extends Player {
     public int step(Board board) {
         //MINMAX algorithm
 
-        //create the graph of the game
-        Node root = new Node(board);
-
-        for(int i = 0; i < Depth; i++){
-            root.createChildren();
-        }
-
-        root.calc(playerIndex);
+        Node root = new Node(board, Depth);
+        root.calcValue(true);
 
         return root.step;
     }
