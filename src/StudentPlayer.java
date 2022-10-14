@@ -48,42 +48,42 @@ public class StudentPlayer extends Player {
         for (int x = -3; x < 1; x++) {
             for (int i = x; i < x + 4; i++) {
                 // test rows
-                boolean testrow = true;
-                try{
-                    if (testrow && (state[row][step + i] == player) && (i != 0)) {
+                boolean test_row = true;
+                try {
+                    if (test_row && (state[row][step + i] == player) && (i != 0)) {
                         value += Points.lineoftwo;
                     }
-                }catch (IndexOutOfBoundsException e){
-                    testrow = false;
+                } catch (IndexOutOfBoundsException e) {
+                    test_row = false;
                 }
 
                 // test columns
-                boolean testcol = true;
-                try{
-                    if (testcol && (state[row + i][step] == player) && (i != 0)){
+                boolean test_col = true;
+                try {
+                    if (test_col && (state[row + i][step] == player) && (i != 0)) {
                         value += Points.lineoftwo;
                     }
-                }catch (IndexOutOfBoundsException e){
-                    testcol = false;
+                } catch (IndexOutOfBoundsException e) {
+                    test_col = false;
                 }
 
                 // test diagonals
-                boolean testdiag1 = true;
-                try{
-                    if (testdiag1 && (state[row + i][step - i] == player) && (i != 0)){
+                boolean test_diag1 = true;
+                try {
+                    if (test_diag1 && (state[row + i][step - i] == player) && (i != 0)) {
                         value += Points.lineoftwo;
                     }
-                }catch (IndexOutOfBoundsException e){
-                    testdiag1 = false;
+                } catch (IndexOutOfBoundsException e) {
+                    test_diag1 = false;
                 }
 
-                boolean testdiag2 = true;
-                try{
-                    if (testdiag2 && (state[row - i][step + i] == player) && (i != 0)){
+                boolean test_diag2 = true;
+                try {
+                    if (test_diag2 && (state[row - i][step + i] == player) && (i != 0)) {
                         value += Points.lineoftwo;
                     }
-                }catch (IndexOutOfBoundsException e){
-                    testdiag2 = false;
+                } catch (IndexOutOfBoundsException e) {
+                    test_diag2 = false;
                 }
             }
         }
@@ -102,7 +102,6 @@ public class StudentPlayer extends Player {
             this.value = value;
             this.board = new Board(board);
             this.node_depth = node_depth;
-            board.getLastPlayerColumn();
         }
 
         Node(Board board, int node_depth) {
@@ -112,22 +111,23 @@ public class StudentPlayer extends Player {
         }
 
         int node_depth;
+
         int calcValue(boolean maxValue) {
-            if(node_depth != 0){
+            if (node_depth != 0) {
                 createChildren();
             }
 
-            if(maxValue){
+            if (maxValue) {
                 int max = -Points.inf;
                 for (int i = 0; i < boardSize[1]; i++) {
-                    if(nodes[i] != null){
-                        if(node_depth == 0){
+                    if (nodes[i] != null) {
+                        if (node_depth == 0) {
                             value = getValue(nodes[i].board, i, playerIndex);
-                        }else{
+                        } else {
                             value = nodes[i].calcValue(false);
                         }
 
-                        if(value > max){
+                        if (value > max) {
                             max = value;
                             step = i;
                         }
@@ -135,17 +135,17 @@ public class StudentPlayer extends Player {
                 }
 
                 return max;
-            }else{
+            } else {
                 int min = Points.inf;
                 for (int i = 0; i < boardSize[1]; i++) {
-                    if(nodes[i] != null){
-                        if(node_depth == 0){
+                    if (nodes[i] != null) {
+                        if (node_depth == 0) {
                             value = getValue(nodes[i].board, i, playerIndex);
-                        }else{
+                        } else {
                             value = nodes[i].calcValue(true);
                         }
 
-                        if(value < min){
+                        if (value < min) {
                             min = value;
                             step = i;
                         }
@@ -158,23 +158,21 @@ public class StudentPlayer extends Player {
 
         // generate nodes for all the possible moves
         void createChildren() {
-            int nextPlayer = 1;
-            if (board.getLastPlayerIndex() == 1) {
-                nextPlayer = 2;
+            int nextPlayer = (playerIndex == 1) ? 2 : 1;
 
-                for (int i = 0; i < boardSize[1]; i++) {
-                    Board copyBoard = new Board(board);
-                    if(copyBoard.stepIsValid(i)){
-                        int moveValue = getValue(copyBoard, i, nextPlayer);
+            for (int i = 0; i < boardSize[1]; i++) {
+                Board copyBoard = new Board(board);
+                if (copyBoard.stepIsValid(i)) {
+                    int moveValue = getValue(copyBoard, i, nextPlayer);
 
-                        copyBoard.step(nextPlayer, i);
-                        nodes[i] = new Node(moveValue, copyBoard, node_depth - 1);
-                    }else{
-                        nodes[i] = null;
-                    }
+                    copyBoard.step(nextPlayer, i);
+                    nodes[i] = new Node(moveValue, copyBoard, node_depth - 1);
+                } else {
+                    nodes[i] = null;
                 }
             }
         }
+
     }
 
     @Override
