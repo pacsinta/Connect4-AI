@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="708569e6-05cb-41e9-b005-0de26176cf16" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Board.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/StudentPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/StudentPlayer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -71,7 +73,7 @@
       <workItem from="1665423470959" duration="4000" />
       <workItem from="1665560099377" duration="3212000" />
       <workItem from="1665563354837" duration="1694000" />
-      <workItem from="1665742899481" duration="1527000" />
+      <workItem from="1665742899481" duration="4577000" />
     </task>
     <task id="LOCAL-00001" summary="Init">
       <created>1664794386015</created>
@@ -87,7 +89,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665744350586</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Updated variable names">
+      <created>1665744655922</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1665744655922</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -96,6 +105,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Init" />
     <MESSAGE value="Final v0.1&#10;There is a bug in the getValue function" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final v0.1&#10;There is a bug in the getValue function" />
+    <MESSAGE value="Updated variable names" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated variable names" />
   </component>
 </project>

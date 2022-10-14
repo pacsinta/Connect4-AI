@@ -16,7 +16,7 @@ public class Board {
     private int winner = -1;
 
     public Board(int[] boardSize, int nToConnect) {
-        this.state = new int[boardSize[0]][boardSize[1]];
+        this.state = new int[boardSize[0]][boardSize[1]];  // state[row][column]
         this.boardSize = boardSize;
         this.nToConnect = nToConnect;
     }

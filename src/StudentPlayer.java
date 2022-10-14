@@ -6,16 +6,14 @@ public class StudentPlayer extends Player {
         public static final int lineofthree = 5;
     }
 
-    private static final int Depth = 10;
+    private static final int Depth = 3;
 
     int middleRow;
 
     public StudentPlayer(int playerIndex, int[] boardSize, int nToConnect) {
         super(playerIndex, boardSize, nToConnect);
         middleRow = boardSize[1] / 2;
-        if (boardSize[1] % 2 == 1) {
-            middleRow++;
-        }
+
     }
 
     private int getValue(Board board, int step, int player) {
@@ -37,8 +35,8 @@ public class StudentPlayer extends Player {
         // first get the row
         int[][] state = copyBoard.getState();
         int row = 0;
-        for (int i = 6; i >= 0; i--) {
-            if (state[i][step] == player) {
+        for (int i = state[0].length; i >= 0; i--) {
+            if (state[row][step] == player) {
                 row = i;
                 break;
             }
@@ -117,6 +115,7 @@ public class StudentPlayer extends Player {
                 createChildren();
             }
 
+            System.out.println("depth: "+node_depth);
             if (maxValue) {
                 int max = -Points.inf;
                 for (int i = 0; i < boardSize[1]; i++) {
@@ -178,10 +177,24 @@ public class StudentPlayer extends Player {
     @Override
     public int step(Board board) {
         //MINMAX algorithm
+        int x = testing(board);
+
 
         Node root = new Node(board, Depth);
         root.calcValue(true);
 
         return root.step;
+    }
+
+
+    int testing(Board b){
+        Board board = new Board(b);
+
+        board.step(1, 0);
+        board.step(2, 1);
+
+        int test = getValue(board, 3, 1);
+
+        return test;
     }
 }
