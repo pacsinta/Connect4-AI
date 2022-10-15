@@ -96,26 +96,27 @@ public class StudentPlayer extends Player {
         int step;
         Board board;
 
-        Node(int value, Board board, int node_depth) {
-            this.value = value;
-            this.board = new Board(board);
-            this.node_depth = node_depth;
-        }
-
         Node(Board board, int node_depth) {
-            this.value = -1;
             this.board = new Board(board);
             this.node_depth = node_depth;
         }
 
         int node_depth;
 
-        int calcValue(boolean maxValue) {
-            if (node_depth != 0) {
-                createChildren();
-            }
 
-            System.out.println("depth: "+node_depth);
+        //TODO
+        void printChildes(){
+            System.out.println("Node depth: " + node_depth);
+            for(int i = 0; i < boardSize[1]; i++) {
+                if (nodes[i] != null) {
+                    System.out.println("step: "+i+" value: "+nodes[i].value);
+                }
+            }
+        }
+
+        int calcValue(boolean maxValue) {
+            createChildren();
+
             if (maxValue) {
                 int max = -Points.inf;
                 for (int i = 0; i < boardSize[1]; i++) {
@@ -133,6 +134,8 @@ public class StudentPlayer extends Player {
                     }
                 }
 
+                printChildes();
+                System.out.println("max value: " + max);
                 return max;
             } else {
                 int min = Points.inf;
@@ -151,6 +154,8 @@ public class StudentPlayer extends Player {
                     }
                 }
 
+                printChildes();
+                System.out.println("min value: " + min);
                 return min;
             }
         }
@@ -162,10 +167,8 @@ public class StudentPlayer extends Player {
             for (int i = 0; i < boardSize[1]; i++) {
                 Board copyBoard = new Board(board);
                 if (copyBoard.stepIsValid(i)) {
-                    int moveValue = getValue(copyBoard, i, nextPlayer);
-
                     copyBoard.step(nextPlayer, i);
-                    nodes[i] = new Node(moveValue, copyBoard, node_depth - 1);
+                    nodes[i] = new Node(copyBoard, node_depth - 1);
                 } else {
                     nodes[i] = null;
                 }
@@ -180,8 +183,8 @@ public class StudentPlayer extends Player {
         int x = testing(board);
 
 
-        Node root = new Node(board, Depth);
-        root.calcValue(true);
+        Node root = new Node(board, 1);
+        int v = root.calcValue(true);
 
         return root.step;
     }
