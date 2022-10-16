@@ -3,6 +3,10 @@
 
 ## 2022. szeptember 27.
 
+<p align="center">
+  <img src="image.png" width="400" />
+</p>
+
 ## Feladat
 
 Ebben a házi feladatban a feladat egy ágens implementálása, amely képes egy másik ágenst legyőzni a
