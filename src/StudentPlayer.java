@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class StudentPlayer extends Player {
     class Points {
         public static final int inf = Integer.MAX_VALUE;
@@ -6,7 +8,7 @@ public class StudentPlayer extends Player {
         public static final int lineofthree = 5;
     }
 
-    private static final int Depth = 3;
+    private static final int Depth = 1;
 
     int middleRow;
 
@@ -35,8 +37,8 @@ public class StudentPlayer extends Player {
         // first get the row
         int[][] state = copyBoard.getState();
         int row = 0;
-        for (int i = state[0].length; i >= 0; i--) {
-            if (state[row][step] == player) {
+        for (int i = 0; i < boardSize[0]; i++) {
+            if (state[i][step] == player) {
                 row = i;
                 break;
             }
@@ -44,44 +46,52 @@ public class StudentPlayer extends Player {
 
 
         for (int x = -3; x < 1; x++) {
+
+            boolean testRow = step + x >= 0 && step + x + 3 < boardSize[1];
+            boolean testCol = row + x >= 0 && row + x + 3 < boardSize[0];
+            boolean testDiag1 = testCol && testRow;
+            boolean testDiag2 = row - x < boardSize[0] && row - (x + 3) >= 0 && testRow;
+
+            boolean isBetweenRow = false;
+            boolean isBetweenCol = false;
+            boolean isBetweenDiag1 = false;
+            boolean isBetweenDiag2 = false;
+
+            int countRow = 0;
+            int countCol = 0;
+            int countDiag1 = 0;
+            int countDiag2 = 0;
+
             for (int i = x; i < x + 4; i++) {
                 // test rows
-                boolean test_row = true;
-                try {
-                    if (test_row && (state[row][step + i] == player) && (i != 0)) {
-                        value += Points.lineoftwo;
-                    }
-                } catch (IndexOutOfBoundsException e) {
-                    test_row = false;
+                if (testRow && (state[row][step + i] == player)) {
+                    countRow++;
+                } else if (testRow && (state[row][step + i] != 0 && state[row][step + i] != player)) {
+                    countRow = 0;
                 }
 
                 // test columns
-                boolean test_col = true;
-                try {
-                    if (test_col && (state[row + i][step] == player) && (i != 0)) {
-                        value += Points.lineoftwo;
+                if (testCol && (state[row + i][step] == player) && (i != 0)) {
+                    value += Points.lineoftwo;
+                    if (row + i + 1 < boardSize[0] && state[row + i + 1][step] == player) {
+                        value += Points.lineofthree;
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    test_col = false;
                 }
+
 
                 // test diagonals
-                boolean test_diag1 = true;
-                try {
-                    if (test_diag1 && (state[row + i][step - i] == player) && (i != 0)) {
-                        value += Points.lineoftwo;
+                if (testDiag1 && (state[row + i][step + i] == player) && (i != 0)) {
+                    value += Points.lineoftwo;
+                    if (row + i + 1 < boardSize[0] && step + i + 1 < boardSize[1] && state[row + i + 1][step + i + 1] == player) {
+                        value += Points.lineofthree;
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    test_diag1 = false;
                 }
 
-                boolean test_diag2 = true;
-                try {
-                    if (test_diag2 && (state[row - i][step + i] == player) && (i != 0)) {
-                        value += Points.lineoftwo;
+                if (testDiag2 && (state[row - i][step + i] == player) && (i != 0)) {
+                    value += Points.lineoftwo;
+                    if (row - i - 1 >= 0 && step + i + 1 < boardSize[1] && state[row - i - 1][step + i + 1] == player) {
+                        value += Points.lineofthree;
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    test_diag2 = false;
                 }
             }
         }
@@ -105,59 +115,61 @@ public class StudentPlayer extends Player {
 
 
         //TODO
-        void printChildes(){
+        void printChildes() {
             System.out.println("Node depth: " + node_depth);
-            for(int i = 0; i < boardSize[1]; i++) {
+            for (int i = 0; i < boardSize[1]; i++) {
                 if (nodes[i] != null) {
-                    System.out.println("step: "+i+" value: "+nodes[i].value);
+                    System.out.println("step: " + i + " value: " + nodes[i].value);
                 }
             }
+        }
+
+        int[] endValues = new int[boardSize[1]];
+
+        boolean isMinMax(boolean getMax, int value, int minmax) {
+            if (getMax) {
+                if (value > minmax) {
+                    return true;
+                }
+            } else {
+                if (value < minmax) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        int calcValue() {
+            return calcValue(true);
         }
 
         int calcValue(boolean maxValue) {
             createChildren();
 
-            if (maxValue) {
-                int max = -Points.inf;
+            int minmax = maxValue ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            if (node_depth == 0) {
                 for (int i = 0; i < boardSize[1]; i++) {
-                    if (nodes[i] != null) {
-                        if (node_depth == 0) {
-                            value = getValue(nodes[i].board, i, playerIndex);
-                        } else {
-                            value = nodes[i].calcValue(false);
-                        }
-
-                        if (value > max) {
-                            max = value;
-                            step = i;
-                        }
+                    endValues[i] = getValue(board, i, playerIndex);
+                    if (isMinMax(maxValue, endValues[i], minmax)) {
+                        minmax = endValues[i];
+                        step = i;
                     }
                 }
-
-                printChildes();
-                System.out.println("max value: " + max);
-                return max;
             } else {
-                int min = Points.inf;
                 for (int i = 0; i < boardSize[1]; i++) {
                     if (nodes[i] != null) {
-                        if (node_depth == 0) {
-                            value = getValue(nodes[i].board, i, playerIndex);
-                        } else {
-                            value = nodes[i].calcValue(true);
-                        }
+                        value = nodes[i].calcValue(!maxValue);
 
-                        if (value < min) {
-                            min = value;
+                        if (isMinMax(maxValue, value, minmax)) {
+                            minmax = value;
                             step = i;
                         }
                     }
                 }
-
-                printChildes();
-                System.out.println("min value: " + min);
-                return min;
             }
+
+            return minmax;
         }
 
         // generate nodes for all the possible moves
@@ -166,7 +178,7 @@ public class StudentPlayer extends Player {
 
             for (int i = 0; i < boardSize[1]; i++) {
                 Board copyBoard = new Board(board);
-                if (copyBoard.stepIsValid(i)) {
+                if (stepIsValid(i, copyBoard)) {
                     copyBoard.step(nextPlayer, i);
                     nodes[i] = new Node(copyBoard, node_depth - 1);
                 } else {
@@ -177,27 +189,48 @@ public class StudentPlayer extends Player {
 
     }
 
+    boolean stepIsValid(int step, Board board) {
+        int top_cell_of_column = board.getState()[boardSize[0] - 1][step];
+        if (board.stepIsValid(step) && top_cell_of_column == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public int step(Board board) {
         //MINMAX algorithm
         int x = testing(board);
 
 
-        Node root = new Node(board, 1);
-        int v = root.calcValue(true);
+        /*Node root = new Node(board, 0);
+        int v = root.calcValue();
+        System.out.println("step: " + root.step + " value: " + v);
 
-        return root.step;
+        return root.step;*/
+
+        //System.exit(0);
+
+        return x;
     }
 
 
-    int testing(Board b){
+    //TODO
+    int testing(Board b) {
         Board board = new Board(b);
 
-        board.step(1, 0);
-        board.step(2, 1);
+        //Node root = new Node(board, 0);
+        //int v = root.calcValue();
+        //System.out.println("step: " + root.step);
+        //System.out.println("value: " + v);
 
-        int test = getValue(board, 3, 1);
+        board.step(1, 3);
+        board.step(2, 2);
 
-        return test;
+        int test = getValue(board, 0, 1);
+        System.out.println("test: " + test);
+
+        return 0;
     }
 }
