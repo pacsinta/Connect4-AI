@@ -9,28 +9,13 @@
 
 ## Feladat
 
-Ebben a házi feladatban a feladat egy ágens implementálása, amely képes egy másik ágenst legyőzni a
-Connect4 nevu játékban. A játék kétszemélyes, egy 6×7-es táblán játszódik. A játékosok felváltva ej-
-tik bele a táblába a saját színüket. A gy ̋ozelemhez 4 saját színt kell egy vonalban kirakni (függ ̋olege-
-sen/vízszintesen/átlósan). A játék, egy már megoldott játék, tehát annak jelenlegi állapotát ismerve a ki-
-menete ismert, feltéve, hogy a játékosok tökéletesen játszanak. A tökéletes játékhoz azonban vagy el ̋ozetes
-számítások, vagy lépésenként sok id ̋o szükséges. Ezért a MiniMax^1 algoritmus mélységkorlátozott változa-
-tának használatát javasoljuk. A feladat maximális pontot ér ̋o megoldásához szükség lehet bizonyos extrák
-használatára, ilyenek többek között azα-βnyesés^2 és a transzpozíciós tábla.
-Az ágens implementálható java és python nyelven is. A kiértékelés 3 lépésben történik, mindhárom esetben
-maximum 40 (java) ill. 50 (python) másodperc alatt kell lefutnia a programnak, és bele kell férnie 500 MB
-memóriába.
+Ebben a házi feladatban a feladat egy ágens implementálása, amely képes egy másik ágenst legyőzni a Connect4 nevű játékban. A játék kétszemélyes, egy 6×7-es táblán játszódik. A játékosok felváltva ejtik bele a táblába a saját színüket. A győzelemhez 4 saját színt kell egy vonalban kirakni (függőlegesen/vízszintesen/átlósan). A játék, egy már megoldott játék, tehát annak jelenlegi állapotát ismerve a kimenete ismert, feltéve, hogy a játékosok tökéletesen játszanak. A tökéletes játékhoz azonban vagy előzetes számítások, vagy lépésenként sok idő szükséges. Ezért a <a href="http://mialmanach.mit.bme.hu/aima/ch06s02">MiniMax</a> algoritmus mélységkorlátozott változatának használatát javasoljuk. A feladat maximális pontot érő megoldásához szükség lehet bizonyos extrák használatára, ilyenek többek között az <a href="http://mialmanach.mit.bme.hu/aima/ch06s03">α-β nyesés</a> és a transzpozíciós tábla. Az ágens implementálható java és python nyelven is. A kiértékelés 3 lépésben történik, mindhárom esetben maximum 40 (java) ill. 50 (python) másodperc alatt kell lefutnia a programnak, és bele kell férnie 500 MB memóriába.
 
 1. Játék egy mohó játékos ellen. _(4 pont)_
 2. Játék egy olyan játékos ellen, amelyik 3 mélységig járja be a keresési fát. _(4 pont)_
 3. Játék egy olyan játékos ellen, amelyik 5 mélységig járja be a keresési fát. _(4 pont)_
 
-A feladat megoldásához kiadunk egy ahhoz nagyon hasonló futtatókörnyezetet, mint amin élesben fog tör-
-ténni a kiértékelés. Kérjük, hogy első körben ezen történjen meg a házi feladat tesztelése.
-
-[http://mialmanach.mit.bme.hu/aima/ch06s](http://mialmanach.mit.bme.hu/aima/ch06s)
-<br>
-[http://mialmanach.mit.bme.hu/aima/ch06s](http://mialmanach.mit.bme.hu/aima/ch06s)
+A feladat megoldásához kiadunk egy ahhoz nagyon hasonló futtatókörnyezetet, mint amin élesben fog történni a kiértékelés. Kérjük, hogy első körben ezen történjen meg a házi feladat tesztelése.
 
 
 ## Beadandó
