@@ -43,7 +43,7 @@ public class StudentPlayer extends Player {
                 break;
             }
         }
-
+        
 
         for (int x = -3; x < 1; x++) {
 
