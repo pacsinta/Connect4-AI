@@ -45,56 +45,7 @@ public class StudentPlayer extends Player {
         }
         
 
-        for (int x = -3; x < 1; x++) {
-
-            boolean testRow = step + x >= 0 && step + x + 3 < boardSize[1];
-            boolean testCol = row + x >= 0 && row + x + 3 < boardSize[0];
-            boolean testDiag1 = testCol && testRow;
-            boolean testDiag2 = row - x < boardSize[0] && row - (x + 3) >= 0 && testRow;
-
-            boolean isBetweenRow = false;
-            boolean isBetweenCol = false;
-            boolean isBetweenDiag1 = false;
-            boolean isBetweenDiag2 = false;
-
-            int countRow = 0;
-            int countCol = 0;
-            int countDiag1 = 0;
-            int countDiag2 = 0;
-
-            for (int i = x; i < x + 4; i++) {
-                // test rows
-                if (testRow && (state[row][step + i] == player)) {
-                    countRow++;
-                } else if (testRow && (state[row][step + i] != 0 && state[row][step + i] != player)) {
-                    countRow = 0;
-                }
-
-                // test columns
-                if (testCol && (state[row + i][step] == player) && (i != 0)) {
-                    value += Points.lineoftwo;
-                    if (row + i + 1 < boardSize[0] && state[row + i + 1][step] == player) {
-                        value += Points.lineofthree;
-                    }
-                }
-
-
-                // test diagonals
-                if (testDiag1 && (state[row + i][step + i] == player) && (i != 0)) {
-                    value += Points.lineoftwo;
-                    if (row + i + 1 < boardSize[0] && step + i + 1 < boardSize[1] && state[row + i + 1][step + i + 1] == player) {
-                        value += Points.lineofthree;
-                    }
-                }
-
-                if (testDiag2 && (state[row - i][step + i] == player) && (i != 0)) {
-                    value += Points.lineoftwo;
-                    if (row - i - 1 >= 0 && step + i + 1 < boardSize[1] && state[row - i - 1][step + i + 1] == player) {
-                        value += Points.lineofthree;
-                    }
-                }
-            }
-        }
+        
 
 
         return value;
