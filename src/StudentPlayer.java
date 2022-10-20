@@ -43,9 +43,86 @@ public class StudentPlayer extends Player {
                 break;
             }
         }
-        
 
-        
+        //Row
+        int start = Math.max(step - 3, 0);
+        int count = 0;
+        for (int n = start; n < start + 4; n++) {
+            if(n+4 > boardSize[1]) break;
+            for (int i = n; i < n+4; i++) {
+                if (state[row][i] != player && state[row][i] != 0) {
+                    break;
+                }
+                if (state[row][i] == player) {
+                    count++;
+                }
+            }
+
+            if (count == 2) {
+                value += Points.lineoftwo;
+            } else if (count == 3) {
+                value -= Points.lineoftwo;
+                value += Points.lineofthree;
+            } else if (count == 4) {
+                return Points.inf;
+            }
+
+            count = 0;
+        }
+
+        //Column
+        start = Math.max(row - 3, 0);
+        count = 0;
+        for (int n = start; n < start + 4; n++) {
+            if(n+4 > boardSize[0]) break;
+            for (int i = n; i < n+4; i++) {
+                if (state[i][step] != player && state[i][step] != 0) {
+                    break;
+                }
+                if (state[i][step] == player) {
+                    count++;
+                }
+            }
+
+            if (count == 2) {
+                value += Points.lineoftwo;
+            } else if (count == 3) {
+                value -= Points.lineoftwo;
+                value += Points.lineofthree;
+            } else if (count == 4) {
+                return Points.inf;
+            }
+
+            count = 0;
+        }
+
+        //Diagonal1
+        start = Math.max(row - 3, 0);
+        int start2 = Math.max(step - 3, 0);
+        count = 0;
+        for (int n1 = start, n2 = start2; n1 < start + 4 && n2 < start2 + 4; n1++, n2++) {
+            if(n1+4 > boardSize[0] || n2+4 > boardSize[1]) break;
+            for (int i = n1, j = n2; i < n1+4 && j < n2+4; i++, j++) {
+                if (state[i][j] != player && state[i][j] != 0) {
+                    break;
+                }
+                if (state[i][j] == player) {
+                    count++;
+                }
+            }
+
+            if (count == 2) {
+                value += Points.lineoftwo;
+            } else if (count == 3) {
+                value -= Points.lineoftwo;
+                value += Points.lineofthree;
+            } else if (count == 4) {
+                return Points.inf;
+            }
+
+            count = 0;
+        }
+
 
 
         return value;
@@ -155,15 +232,15 @@ public class StudentPlayer extends Player {
         int x = testing(board);
 
 
-        /*Node root = new Node(board, 0);
+        Node root = new Node(board, 0);
         int v = root.calcValue();
         System.out.println("step: " + root.step + " value: " + v);
 
-        return root.step;*/
+        return root.step;
 
         //System.exit(0);
 
-        return x;
+        //return root.step;
     }
 
 
@@ -177,10 +254,12 @@ public class StudentPlayer extends Player {
         //System.out.println("value: " + v);
 
         board.step(1, 3);
-        board.step(2, 2);
+        board.step(2, 3);
+        //board.step(2, 0);
+        //board.step(1, 3);
 
-        int test = getValue(board, 0, 1);
-        System.out.println("test: " + test);
+        int test = getValue(board, 3, 1);
+        System.out.println("test value: " + test);
 
         return 0;
     }

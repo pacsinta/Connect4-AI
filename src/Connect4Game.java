@@ -13,7 +13,8 @@ public class Connect4Game {
         players[1] = new StudentPlayer(2, boardSize, nToConnect);
 //        players[1] = new PythonPlayer(2, boardSize, nToConnect);
 
-        GameLogic gameLogic = new GameLogic(players[0], players[1], view, boardSize, nToConnect);
+        //GameLogic gameLogic = new GameLogic(players[0], players[1], view, boardSize, nToConnect);
+        GameLogic gameLogic = new GameLogic(players[1], players[0], view, boardSize, nToConnect);
 
         long start = System.currentTimeMillis();
 
