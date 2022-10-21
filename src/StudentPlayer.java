@@ -18,7 +18,7 @@ public class StudentPlayer extends Player {
 
     }
 
-    private int getValue(Board board, int step, int player) {
+    public int getValue(Board board, int step, int player) {
         int value = 0;
         Board copyBoard = new Board(board);
         copyBoard.step(player, step);
@@ -46,10 +46,11 @@ public class StudentPlayer extends Player {
 
         //Row
         int start = Math.max(step - 3, 0);
+        int start2 = Math.max(step - 3, 0);
         int count = 0;
         for (int n = start; n < start + 4; n++) {
-            if(n+4 > boardSize[1]) break;
-            for (int i = n; i < n+4; i++) {
+            if (n + 4 > boardSize[1]) break;
+            for (int i = n; i < n + 4; i++) {
                 if (state[row][i] != player && state[row][i] != 0) {
                     break;
                 }
@@ -71,11 +72,9 @@ public class StudentPlayer extends Player {
         }
 
         //Column
-        start = Math.max(row - 3, 0);
-        count = 0;
-        for (int n = start; n < start + 4; n++) {
-            if(n+4 > boardSize[0]) break;
-            for (int i = n; i < n+4; i++) {
+        for (int n = start2; n < start2 + 4; n++) {
+            if (n + 4 > boardSize[0]) break;
+            for (int i = n; i < n + 4; i++) {
                 if (state[i][step] != player && state[i][step] != 0) {
                     break;
                 }
@@ -96,13 +95,9 @@ public class StudentPlayer extends Player {
             count = 0;
         }
 
-        //Diagonal1
-        start = Math.max(row - 3, 0);
-        int start2 = Math.max(step - 3, 0);
-        count = 0;
         for (int n1 = start, n2 = start2; n1 < start + 4 && n2 < start2 + 4; n1++, n2++) {
-            if(n1+4 > boardSize[0] || n2+4 > boardSize[1]) break;
-            for (int i = n1, j = n2; i < n1+4 && j < n2+4; i++, j++) {
+            if (n1 + 4 > boardSize[0] || n2 + 4 > boardSize[1]) break;
+            for (int i = n1, j = n2; i < n1 + 4 && j < n2 + 4; i++, j++) {
                 if (state[i][j] != player && state[i][j] != 0) {
                     break;
                 }
@@ -123,13 +118,11 @@ public class StudentPlayer extends Player {
             count = 0;
         }
 
-
-
         return value;
     }
 
     class Node {
-        Node[] nodes = new Node[boardSize[1]];
+        Node[] nodes = null;
         int value;
         int step;
         Board board;
@@ -152,7 +145,7 @@ public class StudentPlayer extends Player {
             }
         }
 
-        int[] endValues = new int[boardSize[1]];
+        int[] endValues = null;
 
         boolean isMinMax(boolean getMax, int value, int minmax) {
             if (getMax) {
@@ -179,6 +172,7 @@ public class StudentPlayer extends Player {
             if (node_depth == 0) {
                 for (int i = 0; i < boardSize[1]; i++) {
                     endValues[i] = getValue(board, i, playerIndex);
+                    System.out.print(endValues[i]);
                     if (isMinMax(maxValue, endValues[i], minmax)) {
                         minmax = endValues[i];
                         step = i;
@@ -228,39 +222,9 @@ public class StudentPlayer extends Player {
 
     @Override
     public int step(Board board) {
-        //MINMAX algorithm
-        int x = testing(board);
-
-
         Node root = new Node(board, 0);
         int v = root.calcValue();
-        System.out.println("step: " + root.step + " value: " + v);
 
         return root.step;
-
-        //System.exit(0);
-
-        //return root.step;
-    }
-
-
-    //TODO
-    int testing(Board b) {
-        Board board = new Board(b);
-
-        //Node root = new Node(board, 0);
-        //int v = root.calcValue();
-        //System.out.println("step: " + root.step);
-        //System.out.println("value: " + v);
-
-        board.step(1, 3);
-        board.step(2, 3);
-        //board.step(2, 0);
-        //board.step(1, 3);
-
-        int test = getValue(board, 3, 1);
-        System.out.println("test value: " + test);
-
-        return 0;
     }
 }

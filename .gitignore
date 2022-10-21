@@ -29,3 +29,5 @@ bin/
 .DS_Store
 /.idea/
 /MI_hf1.iml
+src/MI_hf1.iml
+output/
