@@ -9,11 +9,6 @@ public class StudentPlayer extends Player {
     final int RowCount = boardSize[0];
     final int ColumnCount = boardSize[1];
 
-    class Player {
-        public final int me = 1;
-        public final int opponent = 2;
-    }
-
     int getOtherPlayer(int player) {
         return player == 1 ? 2 : 1;
     }
