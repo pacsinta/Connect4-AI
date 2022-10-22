@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class StudentPlayer extends Player {
     class Points {
         public static final int inf = Integer.MAX_VALUE;
@@ -8,144 +6,106 @@ public class StudentPlayer extends Player {
         public static final int lineofthree = 5;
     }
 
+    final int RowCount = boardSize[0];
+    final int ColumnCount = boardSize[1];
+
+    class Player {
+        public final int me = 1;
+        public final int opponent = 2;
+    }
+
+    int getOtherPlayer(int player) {
+        return player == 1 ? 2 : 1;
+    }
+
     private static final int Depth = 1;
 
-    int middleRow;
+    int middleColumn;
 
     public StudentPlayer(int playerIndex, int[] boardSize, int nToConnect) {
         super(playerIndex, boardSize, nToConnect);
-        middleRow = boardSize[1] / 2;
+        middleColumn = boardSize[1] / 2;
 
     }
 
-    public int getValue(Board board, int step, int player) {
-        int value = 0;
-        Board copyBoard = new Board(board);
-        copyBoard.step(player, step);
 
-        // win
-        if (copyBoard.gameEnded()) {
+    private int getScoreInFour(int[] fourField, int player) {
+        int playerCount = 0;
+        int opponentCount = 0;
+        for (int i = 0; i < nToConnect; i++) {
+            if (fourField[i] == getOtherPlayer(player)) {
+                opponentCount++;
+            }
+            if (fourField[i] == player) {
+                playerCount++;
+            }
+        }
+
+        if (playerCount == 2 && opponentCount == 0) {
+            return Points.lineoftwo;
+        } else if (playerCount == 3 && opponentCount == 0) {
+            return Points.lineofthree;
+        } else if (playerCount == 0 && opponentCount == 2) {
+            return -Points.lineoftwo;
+        } else if (playerCount == 0 && opponentCount == 3) {
+            return -Points.lineofthree;
+        } else if(playerCount == 4){
             return Points.inf;
+        } else if(opponentCount == 4){
+            return -Points.inf;
+        }else {
+            return 0;
+        }
+    }
+
+
+    private int getValue(Board board, int player) {
+        int[][] state = board.getState();
+        int value = 0;
+
+        for(int i = 0; i < RowCount; i++) {
+            if(state[i][middleColumn] == player) {
+                value += Points.middle;
+            }
         }
 
-        // middle points
-        if (step == middleRow) {
-            value += Points.middle;
+
+        for (int row = 0; row < RowCount; row++) {
+            for (int col = 0; col < ColumnCount; col++) {
+                if(col+3 < ColumnCount) {
+                    value += getScoreInFour(new int[]{state[row][col], state[row][col + 1], state[row][col + 2], state[row][col + 3]}, player);
+                }
+                if(row+3 < RowCount) {
+                    value += getScoreInFour(new int[]{state[row][col], state[row + 1][col], state[row + 2][col], state[row + 3][col]}, player);
+                }
+                if(row+3 < RowCount && col+3 < ColumnCount) {
+                    value += getScoreInFour(new int[]{state[row][col], state[row + 1][col + 1], state[row + 2][col + 2], state[row + 3][col + 3]}, player);
+                }
+                if(row+3 < RowCount && col-3 >= 0) {
+                    value += getScoreInFour(new int[]{state[row][col], state[row + 1][col - 1], state[row + 2][col - 2], state[row + 3][col - 3]}, player);
+                }
+            }
         }
 
-        // lines of two/three points
-        // first get the row
-        int[][] state = copyBoard.getState();
-        int row = 0;
-        for (int i = 0; i < boardSize[0]; i++) {
-            if (state[i][step] == player) {
-                row = i;
-                break;
-            }
-        }
-
-        //Row
-        int start = Math.max(step - 3, 0);
-        int start2 = Math.max(step - 3, 0);
-        int count = 0;
-        for (int n = start; n < start + 4; n++) {
-            if (n + 4 > boardSize[1]) break;
-            for (int i = n; i < n + 4; i++) {
-                if (state[row][i] != player && state[row][i] != 0) {
-                    break;
-                }
-                if (state[row][i] == player) {
-                    count++;
-                }
-            }
-
-            if (count == 2) {
-                value += Points.lineoftwo;
-            } else if (count == 3) {
-                value -= Points.lineoftwo;
-                value += Points.lineofthree;
-            } else if (count == 4) {
-                return Points.inf;
-            }
-
-            count = 0;
-        }
-
-        //Column
-        for (int n = start2; n < start2 + 4; n++) {
-            if (n + 4 > boardSize[0]) break;
-            for (int i = n; i < n + 4; i++) {
-                if (state[i][step] != player && state[i][step] != 0) {
-                    break;
-                }
-                if (state[i][step] == player) {
-                    count++;
-                }
-            }
-
-            if (count == 2) {
-                value += Points.lineoftwo;
-            } else if (count == 3) {
-                value -= Points.lineoftwo;
-                value += Points.lineofthree;
-            } else if (count == 4) {
-                return Points.inf;
-            }
-
-            count = 0;
-        }
-
-        for (int n1 = start, n2 = start2; n1 < start + 4 && n2 < start2 + 4; n1++, n2++) {
-            if (n1 + 4 > boardSize[0] || n2 + 4 > boardSize[1]) break;
-            for (int i = n1, j = n2; i < n1 + 4 && j < n2 + 4; i++, j++) {
-                if (state[i][j] != player && state[i][j] != 0) {
-                    break;
-                }
-                if (state[i][j] == player) {
-                    count++;
-                }
-            }
-
-            if (count == 2) {
-                value += Points.lineoftwo;
-            } else if (count == 3) {
-                value -= Points.lineoftwo;
-                value += Points.lineofthree;
-            } else if (count == 4) {
-                return Points.inf;
-            }
-
-            count = 0;
-        }
 
         return value;
     }
 
     class Node {
-        Node[] nodes = null;
+        Node[] nodes = new Node[boardSize[1]];
         int value;
         int step;
+        int node_depth;
+        int node_player;
         Board board;
 
-        Node(Board board, int node_depth) {
+        Node(Board board, int node_depth, int node_player) {
             this.board = new Board(board);
             this.node_depth = node_depth;
+            this.node_player = node_player;
         }
 
-        int node_depth;
-
-
-        //TODO
-        void printChildes() {
-            System.out.println("Node depth: " + node_depth);
-            for (int i = 0; i < boardSize[1]; i++) {
-                if (nodes[i] != null) {
-                    System.out.println("step: " + i + " value: " + nodes[i].value);
-                }
-            }
-        }
-
-        int[] endValues = null;
+        int[] endValues = new int[boardSize[1]];
 
         boolean isMinMax(boolean getMax, int value, int minmax) {
             if (getMax) {
@@ -161,24 +121,37 @@ public class StudentPlayer extends Player {
             return false;
         }
 
+        // generate nodes for all the possible moves
+        void createChildren() {
+            for (int i = 0; i < boardSize[1]; i++) {
+                Board copyBoard = new Board(board);
+                if (stepIsValid(i, copyBoard)) {
+                    int nextPlayer = getOtherPlayer(node_player);
+                    copyBoard.step(getOtherPlayer(nextPlayer), i);
+                    nodes[i] = new Node(copyBoard, node_depth - 1, nextPlayer);
+                } else {
+                    nodes[i] = null;
+                }
+            }
+        }
+
         int calcValue() {
             return calcValue(true);
         }
 
+        void cleanMemory(){
+            nodes = null;
+        }
         int calcValue(boolean maxValue) {
-            createChildren();
-
             int minmax = maxValue ? Integer.MIN_VALUE : Integer.MAX_VALUE;
             if (node_depth == 0) {
-                for (int i = 0; i < boardSize[1]; i++) {
-                    endValues[i] = getValue(board, i, playerIndex);
-                    System.out.print(endValues[i]);
-                    if (isMinMax(maxValue, endValues[i], minmax)) {
-                        minmax = endValues[i];
-                        step = i;
-                    }
+                value = getValue(board, node_player);
+                if(value != 0) {
+                    value = value;
                 }
+                return value;
             } else {
+                createChildren();
                 for (int i = 0; i < boardSize[1]; i++) {
                     if (nodes[i] != null) {
                         value = nodes[i].calcValue(!maxValue);
@@ -189,30 +162,15 @@ public class StudentPlayer extends Player {
                         }
                     }
                 }
+                cleanMemory();
             }
 
             return minmax;
         }
-
-        // generate nodes for all the possible moves
-        void createChildren() {
-            int nextPlayer = (playerIndex == 1) ? 2 : 1;
-
-            for (int i = 0; i < boardSize[1]; i++) {
-                Board copyBoard = new Board(board);
-                if (stepIsValid(i, copyBoard)) {
-                    copyBoard.step(nextPlayer, i);
-                    nodes[i] = new Node(copyBoard, node_depth - 1);
-                } else {
-                    nodes[i] = null;
-                }
-            }
-        }
-
     }
 
     boolean stepIsValid(int step, Board board) {
-        int top_cell_of_column = board.getState()[boardSize[0] - 1][step];
+        int top_cell_of_column = board.getState()[0][step];  //Bal felso sarok = 0, 0
         if (board.stepIsValid(step) && top_cell_of_column == 0) {
             return true;
         }
@@ -222,8 +180,8 @@ public class StudentPlayer extends Player {
 
     @Override
     public int step(Board board) {
-        Node root = new Node(board, 0);
-        int v = root.calcValue();
+        Node root = new Node(board, 6, playerIndex);
+        root.calcValue();
 
         return root.step;
     }
