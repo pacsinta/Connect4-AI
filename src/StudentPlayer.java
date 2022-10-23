@@ -17,7 +17,7 @@ public class StudentPlayer extends Player {
         return player == 1 ? 2 : 1;
     }
 
-    private static final int Depth = 8;
+    private static final int Depth = 6;
 
     int middleColumn;
 
@@ -146,21 +146,17 @@ public class StudentPlayer extends Player {
         }
 
         // generate nodes for all the possible moves
-        int createChildren() {
-            int remaining = 0;
+        void createChildren() {
             for (int i = 0; i < ColumnCount; i++) {
                 Board copyBoard = new Board(board);
                 if (stepIsValid(i, copyBoard)) {
                     int nextPlayer = getOtherPlayer(node_player);
                     copyBoard.step(node_player, i);
                     nodes[i] = new Node(copyBoard, node_depth - 1, nextPlayer);
-                    remaining++;
                 } else {
                     nodes[i] = null;
                 }
             }
-
-            return remaining;
         }
 
         void calcValue() {
@@ -174,12 +170,7 @@ public class StudentPlayer extends Player {
         int calcNotRoot(boolean maxValue, int alpha, int beta) {
             int minmax = maxValue ? -Points.inf : Points.inf;
 
-            int remaining_step = createChildren();
-
-            if(remaining_step == 0) {
-                value = getValue(board, node_player);
-                return value;
-            }
+            createChildren();
 
             for (int i = 0; i < ColumnCount; i++) {
                 if (nodes[i] != null) {
@@ -209,7 +200,7 @@ public class StudentPlayer extends Player {
         }
 
         int calcValue(boolean maxValue, int alpha, int beta) {
-            if (node_depth == 0) {
+            if (node_depth == 0 || board.gameEnded()) {
                 value = getValue(board, node_player);
                 return value;
             } else {
