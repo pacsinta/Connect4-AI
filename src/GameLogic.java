@@ -31,7 +31,7 @@ public class GameLogic {
 
             playerStepColumn = p.step(boardCopy);
             if (!validStepColumns.contains(playerStepColumn)) {
-                throw new RuntimeException("Returned column is not valid!");
+                throw new RuntimeException("Returned column is not valid!"+ " Column: " + playerStepColumn);
             }
 
             board.step(this.currentPlayerIndex, playerStepColumn);

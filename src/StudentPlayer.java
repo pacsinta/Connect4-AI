@@ -1,9 +1,13 @@
 public class StudentPlayer extends Player {
     class Points {
-        public static final int inf = 1000;
+        public static final int inf = 100000;
         public static final int middle = 4;
         public static final int lineoftwo = 2;
         public static final int lineofthree = 5;
+        public static final int enemy_middle = -1;
+        public static final int enemy_lineoftwo = -1;
+        public static final int enemy_lineofthree = -2;
+
     }
 
     final int RowCount = boardSize[0];
@@ -13,7 +17,7 @@ public class StudentPlayer extends Player {
         return player == 1 ? 2 : 1;
     }
 
-    private static final int Depth = 6;
+    private static final int Depth = 8;
 
     int middleColumn;
 
@@ -35,8 +39,6 @@ public class StudentPlayer extends Player {
         }
 
         return new int[]{playerCount, opponentCount};
-
-
     }
 
     private int convertToPoints(int playerCount, int opponentCount) {
@@ -45,9 +47,9 @@ public class StudentPlayer extends Player {
         } else if (playerCount == 3 && opponentCount == 0) {
             return Points.lineofthree;
         } else if (playerCount == 0 && opponentCount == 2) {
-            return -Points.lineoftwo;
+            return Points.enemy_lineoftwo;
         } else if (playerCount == 0 && opponentCount == 3) {
-            return -Points.lineofthree;
+            return Points.enemy_lineofthree;
         } else if (playerCount == 4) {
             return Points.inf;
         } else if (opponentCount == 4) {
@@ -64,6 +66,8 @@ public class StudentPlayer extends Player {
         for (int i = 0; i < RowCount; i++) {
             if (state[i][middleColumn] == player) {
                 value += Points.middle;
+            } else if (state[i][middleColumn] == getOtherPlayer(player)) {
+                value += Points.enemy_middle;
             }
         }
 
@@ -73,18 +77,38 @@ public class StudentPlayer extends Player {
                 if (col + 3 < ColumnCount) {
                     int[] score = getScoreInFour(new int[]{state[row][col], state[row][col + 1], state[row][col + 2], state[row][col + 3]}, player);
                     value += convertToPoints(score[0], score[1]);
+                    if (value >= Points.inf) {
+                        return Points.inf;
+                    } else if (value <= -Points.inf) {
+                        return -Points.inf;
+                    }
                 }
                 if (row + 3 < RowCount) {
                     int[] score = getScoreInFour(new int[]{state[row][col], state[row + 1][col], state[row + 2][col], state[row + 3][col]}, player);
                     value += convertToPoints(score[0], score[1]);
+                    if (value >= Points.inf) {
+                        return Points.inf;
+                    } else if (value <= -Points.inf) {
+                        return -Points.inf;
+                    }
                 }
                 if (row + 3 < RowCount && col + 3 < ColumnCount) {
                     int[] score = getScoreInFour(new int[]{state[row][col], state[row + 1][col + 1], state[row + 2][col + 2], state[row + 3][col + 3]}, player);
                     value += convertToPoints(score[0], score[1]);
+                    if (value >= Points.inf) {
+                        return Points.inf;
+                    } else if (value <= -Points.inf) {
+                        return -Points.inf;
+                    }
                 }
                 if (row + 3 < RowCount && col - 3 >= 0) {
                     int[] score = getScoreInFour(new int[]{state[row][col], state[row + 1][col - 1], state[row + 2][col - 2], state[row + 3][col - 3]}, player);
                     value += convertToPoints(score[0], score[1]);
+                    if (value >= Points.inf) {
+                        return Points.inf;
+                    } else if (value <= -Points.inf) {
+                        return -Points.inf;
+                    }
                 }
             }
         }
@@ -107,15 +131,13 @@ public class StudentPlayer extends Player {
             this.node_player = node_player;
         }
 
-        int[] endValues = new int[boardSize[1]];
-
         boolean isMinMax(boolean getMax, int value, int minmax) {
             if (getMax) {
                 if (value > minmax) {
                     return true;
                 }
             } else {
-                if (value < minmax) {
+                if (value <= minmax) {
                     return true;
                 }
             }
@@ -124,55 +146,81 @@ public class StudentPlayer extends Player {
         }
 
         // generate nodes for all the possible moves
-        void createChildren() {
+        int createChildren() {
+            int remaining = 0;
             for (int i = 0; i < ColumnCount; i++) {
                 Board copyBoard = new Board(board);
                 if (stepIsValid(i, copyBoard)) {
                     int nextPlayer = getOtherPlayer(node_player);
                     copyBoard.step(node_player, i);
                     nodes[i] = new Node(copyBoard, node_depth - 1, nextPlayer);
+                    remaining++;
                 } else {
                     nodes[i] = null;
                 }
             }
+
+            return remaining;
         }
 
         void calcValue() {
-            calcValue(true, false, 0);
+            calcValue(true, -Points.inf, Points.inf);
         }
 
         void cleanMemory() {
             nodes = null;
         }
 
-        int calcValue(boolean maxValue, boolean testAlpha, int alpha) {
+        int calcNotRoot(boolean maxValue, int alpha, int beta) {
             int minmax = maxValue ? -Points.inf : Points.inf;
+
+            int remaining_step = createChildren();
+
+            if(remaining_step == 0) {
+                value = getValue(board, node_player);
+                return value;
+            }
+
+            for (int i = 0; i < ColumnCount; i++) {
+                if (nodes[i] != null) {
+                    value = nodes[i].calcValue(!maxValue, alpha, beta);
+
+
+                    if (isMinMax(maxValue, value, minmax)) {
+                        minmax = value;
+                        step = i;
+                    }
+
+                    if (maxValue) {
+                        alpha = Math.max(alpha, minmax);
+                    } else {
+                        beta = Math.min(beta, minmax);
+                    }
+
+                    if (maxValue && beta <= alpha) {
+                        break;
+                    } else if (!maxValue && beta <= alpha) {
+                        break;
+                    }
+                }
+            }
+            cleanMemory();
+            return minmax;
+        }
+
+        int calcValue(boolean maxValue, int alpha, int beta) {
             if (node_depth == 0) {
                 value = getValue(board, node_player);
                 return value;
             } else {
-                createChildren();
-                // i = testelni kivant gyerek
-                for (int i = 0; i < ColumnCount; i++) {
-                    if (nodes[i] != null) {
-                        value = nodes[i].calcValue(!maxValue, false, 0);
-
-                        if (isMinMax(maxValue, value, minmax)) {
-                            minmax = value;
-                            step = i;
-                        }
-                    }
-                }
-                cleanMemory();
+                return calcNotRoot(maxValue, alpha, beta);
             }
-
-            return minmax;
         }
     }
 
     boolean stepIsValid(int step, Board board) {
         int top_cell_of_column = board.getState()[0][step];  //Bal felso sarok = 0, 0
-        if (board.stepIsValid(step) && top_cell_of_column == 0) {
+        if (step >= 0 && step < ColumnCount && top_cell_of_column == 0) {
             return true;
         }
 
@@ -184,6 +232,16 @@ public class StudentPlayer extends Player {
         Node root = new Node(board, Depth, playerIndex);
         root.calcValue();
 
-        return root.step;
+        if (stepIsValid(root.step, board)) {
+            return root.step;
+        } else {
+            for (int i = 0; i < ColumnCount; i++) {
+                if (stepIsValid(i, board)) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
     }
 }
