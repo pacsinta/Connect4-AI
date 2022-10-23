@@ -1,12 +1,12 @@
 public class StudentPlayer extends Player {
     class Points {
         public static final int inf = 100000;
-        public static final int middle = 4;
+        public static final int middle = 3;
         public static final int lineoftwo = 2;
-        public static final int lineofthree = 5;
-        public static final int enemy_middle = -1;
+        public static final int lineofthree = 6;
+        public static final int enemy_middle = 0;
         public static final int enemy_lineoftwo = -1;
-        public static final int enemy_lineofthree = -2;
+        public static final int enemy_lineofthree = -4;
 
     }
 
@@ -71,11 +71,10 @@ public class StudentPlayer extends Player {
             }
         }
 
-
         for (int row = 0; row < RowCount; row++) {
             for (int col = 0; col < ColumnCount; col++) {
-                if (col + 3 < ColumnCount) {
-                    int[] score = getScoreInFour(new int[]{state[row][col], state[row][col + 1], state[row][col + 2], state[row][col + 3]}, player);
+                if (row + 3 < RowCount && col - 3 >= 0) {
+                    int[] score = getScoreInFour(new int[]{state[row][col], state[row + 1][col - 1], state[row + 2][col - 2], state[row + 3][col - 3]}, player);
                     value += convertToPoints(score[0], score[1]);
                     if (value >= Points.inf) {
                         return Points.inf;
@@ -92,6 +91,15 @@ public class StudentPlayer extends Player {
                         return -Points.inf;
                     }
                 }
+                if (col + 3 < ColumnCount) {
+                    int[] score = getScoreInFour(new int[]{state[row][col], state[row][col + 1], state[row][col + 2], state[row][col + 3]}, player);
+                    value += convertToPoints(score[0], score[1]);
+                    if (value >= Points.inf) {
+                        return Points.inf;
+                    } else if (value <= -Points.inf) {
+                        return -Points.inf;
+                    }
+                }
                 if (row + 3 < RowCount && col + 3 < ColumnCount) {
                     int[] score = getScoreInFour(new int[]{state[row][col], state[row + 1][col + 1], state[row + 2][col + 2], state[row + 3][col + 3]}, player);
                     value += convertToPoints(score[0], score[1]);
@@ -101,15 +109,7 @@ public class StudentPlayer extends Player {
                         return -Points.inf;
                     }
                 }
-                if (row + 3 < RowCount && col - 3 >= 0) {
-                    int[] score = getScoreInFour(new int[]{state[row][col], state[row + 1][col - 1], state[row + 2][col - 2], state[row + 3][col - 3]}, player);
-                    value += convertToPoints(score[0], score[1]);
-                    if (value >= Points.inf) {
-                        return Points.inf;
-                    } else if (value <= -Points.inf) {
-                        return -Points.inf;
-                    }
-                }
+
             }
         }
 
@@ -137,7 +137,7 @@ public class StudentPlayer extends Player {
                     return true;
                 }
             } else {
-                if (value <= minmax) {
+                if (value < minmax) {
                     return true;
                 }
             }
@@ -176,7 +176,6 @@ public class StudentPlayer extends Player {
                 if (nodes[i] != null) {
                     value = nodes[i].calcValue(!maxValue, alpha, beta);
 
-
                     if (isMinMax(maxValue, value, minmax)) {
                         minmax = value;
                         step = i;
@@ -188,9 +187,9 @@ public class StudentPlayer extends Player {
                         beta = Math.min(beta, minmax);
                     }
 
-                    if (maxValue && beta <= alpha) {
+                    if (maxValue && beta < minmax) {
                         break;
-                    } else if (!maxValue && beta <= alpha) {
+                    } else if (!maxValue && minmax < alpha) {
                         break;
                     }
                 }
@@ -200,10 +199,17 @@ public class StudentPlayer extends Player {
         }
 
         int calcValue(boolean maxValue, int alpha, int beta) {
-            if (node_depth == 0 || board.gameEnded()) {
-                value = getValue(board, node_player);
+            if (node_depth == 0) {
+                value = getValue(board, playerIndex);
                 return value;
-            } else {
+            } else if(board.gameEnded()){
+                if(board.getWinner() == playerIndex){
+                    return Points.inf;
+                }else{
+                    return -Points.inf;
+                }
+            }
+            else {
                 return calcNotRoot(maxValue, alpha, beta);
             }
         }
@@ -211,7 +217,7 @@ public class StudentPlayer extends Player {
 
     boolean stepIsValid(int step, Board board) {
         int top_cell_of_column = board.getState()[0][step];  //Bal felso sarok = 0, 0
-        if (step >= 0 && step < ColumnCount && top_cell_of_column == 0) {
+        if (step < ColumnCount && top_cell_of_column == 0) {
             return true;
         }
 
