@@ -1,4 +1,4 @@
-# MI_hf1
+# BME Mesterséges intelligencia HF1
 # Connect4 ágens
 
 ## 2022. szeptember 27.
